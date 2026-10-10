@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LiteCRM</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+
+    <!-- Login -->
+    <section id="login-view" class="view">
+      <div class="login-card">
+        <h1>LiteCRM</h1>
+        <form id="login-form">
+          <input type="text" id="login-user" placeholder="Username" required autocomplete="username">
+          <input type="password" id="login-pass" placeholder="Password" required autocomplete="current-password">
+          <button type="submit">Sign in</button>
+          <p id="login-error" class="error" hidden></p>
+        </form>
+      </div>
+    </section>
+
+    <!-- Main -->
+    <section id="main-view" class="view" hidden>
+      <header>
+        <h1>LiteCRM</h1>
+        <nav>
+          <button class="tab active" data-tab="contacts">Contacts</button>
+          <button class="tab" data-tab="activity">Activity</button>
+        </nav>
+        <div class="header-right">
+          <span id="user-name"></span>
+          <button id="logout-btn" class="btn-link">Sign out</button>
+        </div>
+      </header>
+
+      <!-- Contacts tab -->
+      <div id="contacts-tab" class="tab-panel">
+        <div class="toolbar">
+          <input type="search" id="search-input" placeholder="Search contacts…">
+          <button id="add-btn" class="btn-primary">+ New contact</button>
+        </div>
+        <table id="contacts-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Company</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="contacts-body"></tbody>
+        </table>
+        <div id="contacts-empty" class="empty-state" hidden>No contacts yet.</div>
+        <div id="contacts-pager" class="pager" hidden>
+          <button id="prev-btn" disabled>← Prev</button>
+          <span id="page-info"></span>
+          <button id="next-btn" disabled>Next →</button>
+        </div>
+      </div>
+
+      <!-- Activity tab -->
+      <div id="activity-tab" class="tab-panel" hidden>
+        <ul id="activity-list"></ul>
+        <div id="activity-empty" class="empty-state" hidden>No activity yet.</div>
+      </div>
+    </section>
+
+    <!-- Contact modal -->
+    <dialog id="contact-dialog">
+      <form id="contact-form">
+        <h2 id="dialog-title">New contact</h2>
+        <input type="hidden" id="contact-id">
+        <label>Name <input type="text" id="c-name" required></label>
+        <label>Email <input type="email" id="c-email"></label>
+        <label>Phone <input type="tel" id="c-phone"></label>
+        <label>Company <input type="text" id="c-company"></label>
+        <label>Notes <textarea id="c-notes" rows="3"></textarea></label>
+        <div class="dialog-actions">
+          <button type="button" id="dialog-cancel">Cancel</button>
+          <button type="submit" class="btn-primary">Save</button>
+        </div>
+      </form>
+    </dialog>
+
+    <!-- Delete confirmation -->
+    <dialog id="delete-dialog">
+      <p>Delete <strong id="delete-name"></strong>?</p>
+      <div class="dialog-actions">
+        <button id="delete-cancel">Cancel</button>
+        <button id="delete-confirm" class="btn-danger">Delete</button>
+      </div>
+    </dialog>
+
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
