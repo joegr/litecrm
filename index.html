@@ -29,6 +29,7 @@
         <nav>
           <button class="tab active" data-tab="contacts">Contacts</button>
           <button class="tab" data-tab="activity">Activity</button>
+          <button class="tab" data-tab="dashboard" id="dashboard-tab-btn" hidden>Dashboard</button>
         </nav>
         <div class="header-right">
           <span id="user-name"></span>
@@ -38,27 +39,71 @@
 
       <!-- Contacts tab -->
       <div id="contacts-tab" class="tab-panel">
-        <div class="toolbar">
-          <input type="search" id="search-input" placeholder="Search contacts…">
-          <button id="add-btn" class="btn-primary">+ New contact</button>
+        <div id="contacts-list">
+          <div class="toolbar">
+            <input type="search" id="search-input" placeholder="Search contacts…">
+            <button id="add-btn" class="btn-primary">+ New contact</button>
+          </div>
+          <table id="contacts-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Company</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="contacts-body"></tbody>
+          </table>
+          <div id="contacts-empty" class="empty-state" hidden>No contacts yet.</div>
+          <div id="contacts-pager" class="pager" hidden>
+            <button id="prev-btn" disabled>← Prev</button>
+            <span id="page-info"></span>
+            <button id="next-btn" disabled>Next →</button>
+          </div>
         </div>
-        <table id="contacts-table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Phone</th>
-              <th>Company</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody id="contacts-body"></tbody>
-        </table>
-        <div id="contacts-empty" class="empty-state" hidden>No contacts yet.</div>
-        <div id="contacts-pager" class="pager" hidden>
-          <button id="prev-btn" disabled>← Prev</button>
-          <span id="page-info"></span>
-          <button id="next-btn" disabled>Next →</button>
+
+        <!-- Contact detail -->
+        <div id="contact-detail" class="detail" hidden>
+          <button id="back-btn" class="btn-link">← All contacts</button>
+          <div class="detail-head">
+            <div>
+              <h2 id="d-name"></h2>
+              <p id="d-meta" class="muted"></p>
+            </div>
+            <button id="d-edit-btn">Edit</button>
+          </div>
+          <p id="d-notes" class="d-notes" hidden></p>
+
+          <form id="comm-form" class="comm-form">
+            <h3>Log communication</h3>
+            <div class="row">
+              <label>Type
+                <select id="cm-channel">
+                  <option value="email">Email</option>
+                  <option value="call">Call</option>
+                  <option value="meeting">Meeting</option>
+                  <option value="note">Note</option>
+                </select>
+              </label>
+              <label id="cm-direction-wrap">Direction
+                <select id="cm-direction">
+                  <option value="outbound">Outbound</option>
+                  <option value="inbound">Inbound</option>
+                </select>
+              </label>
+              <label>When <input type="datetime-local" id="cm-when" required></label>
+            </div>
+            <label>Subject <input type="text" id="cm-subject" maxlength="300"></label>
+            <label>Details <textarea id="cm-body" rows="3"></textarea></label>
+            <p id="cm-error" class="error" hidden></p>
+            <div class="form-actions"><button type="submit" class="btn-primary">Log</button></div>
+          </form>
+
+          <h3>History</h3>
+          <ol id="timeline" class="timeline"></ol>
+          <div id="timeline-empty" class="empty-state" hidden>No communications logged yet.</div>
         </div>
       </div>
 
@@ -66,6 +111,45 @@
       <div id="activity-tab" class="tab-panel" hidden>
         <ul id="activity-list"></ul>
         <div id="activity-empty" class="empty-state" hidden>No activity yet.</div>
+      </div>
+
+      <!-- Dashboard tab (staff only) -->
+      <div id="dashboard-tab" class="tab-panel dashboard" hidden>
+        <div class="filters">
+          <div class="seg" role="group" aria-label="Date range">
+            <button data-days="7">7 days</button>
+            <button data-days="30" class="on">30 days</button>
+            <button data-days="90">90 days</button>
+          </div>
+          <label class="inline">User
+            <select id="dash-user"><option value="">All users</option></select>
+          </label>
+          <span id="dash-range" class="muted"></span>
+        </div>
+        <p id="dash-error" class="error" hidden></p>
+
+        <div id="kpis" class="kpis"></div>
+
+        <section class="card">
+          <div class="card-head">
+            <h3>Daily communications</h3>
+            <button id="chart-table-btn" class="btn-link">Show table</button>
+          </div>
+          <div id="chart-legend" class="legend"></div>
+          <div id="chart" class="chart"></div>
+          <div id="chart-tip" class="tip" hidden></div>
+          <div id="chart-table" class="table-wrap" hidden></div>
+        </section>
+
+        <section class="card">
+          <h3>By user</h3>
+          <div id="per-user" class="table-wrap"></div>
+        </section>
+
+        <section class="card">
+          <h3>Most engaged contacts</h3>
+          <div id="top-contacts" class="table-wrap"></div>
+        </section>
       </div>
     </section>
 
@@ -81,6 +165,21 @@
         <label>Notes <textarea id="c-notes" rows="3"></textarea></label>
         <div class="dialog-actions">
           <button type="button" id="dialog-cancel">Cancel</button>
+          <button type="submit" class="btn-primary">Save</button>
+        </div>
+      </form>
+    </dialog>
+
+    <!-- Engagement event -->
+    <dialog id="event-dialog">
+      <form id="event-form">
+        <h2 id="ev-title">Record open</h2>
+        <label>When <input type="datetime-local" id="ev-when" required></label>
+        <label id="ev-url-wrap">Link clicked (optional) <input type="url" id="ev-url" placeholder="https://"></label>
+        <label>Note (optional) <input type="text" id="ev-note" maxlength="300"></label>
+        <p id="ev-error" class="error" hidden></p>
+        <div class="dialog-actions">
+          <button type="button" id="ev-cancel">Cancel</button>
           <button type="submit" class="btn-primary">Save</button>
         </div>
       </form>
