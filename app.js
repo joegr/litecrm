@@ -2,8 +2,7 @@
   "use strict";
 
   // --- Config ---
-  const params = new URLSearchParams(window.location.search);
-  const API = (params.get("api") || "http://localhost:8000").replace(/\/+$/, "") + "/api";
+  const API = (window.LITECRM_API || "http://localhost:8000").replace(/\/+$/, "") + "/api";
 
   // --- State ---
   let token = localStorage.getItem("token");
