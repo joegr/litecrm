@@ -47,7 +47,7 @@
     if (token) headers["Authorization"] = "Token " + token;
     const url = path.startsWith("http") ? path : API + path;
     const res = await fetch(url, { ...opts, headers });
-    if (res.status === 401) {
+    if (res.status === 401 && token) {
       logout();
       throw new Error("Unauthorized");
     }
