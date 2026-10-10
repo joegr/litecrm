@@ -54,7 +54,7 @@
     }
     if (!res.ok) {
       const body = await res.json().catch(() => ({}));
-      throw new Error(body.error || body.detail || res.statusText);
+      throw new Error(body.error || body.detail || "Request failed (" + res.status + ")");
     }
     if (res.status === 204) return null;
     return res.json();
